@@ -49,7 +49,6 @@
         .pwd-box button:hover {
             background: #0077ed;
         }
-        /* 倒计时样式 */
         .countdown {
             background: #ff3b30;
             color: #fff;
@@ -63,7 +62,6 @@
             top: 20px;
             z-index: 100;
         }
-        /* 过期提示 */
         .expired-box {
             text-align: center;
             font-size: 22px;
@@ -76,7 +74,6 @@
             border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
-        /* iframe容器 */
         .iframe-box {
             width: 800px;
             height: 2400px;
@@ -93,7 +90,6 @@
             margin-left: 0px;
             border: none;
         }
-        /* 手机适配 */
         @media (max-width: 850px) {
             .iframe-box {
                 width: 100%;
@@ -111,13 +107,14 @@
 <script>
 // ===================== 你只需要改下面这3个地方 =====================
 const ACCESS_PASSWORD = "123456"; // 1. 访问密码
-const IFRAME_URL = "shturl.cc/Efog410hMT8Onp3ucPwezDynIenWfSirWmFwmaCuLjYsZMHBthPE01A4tvjHUg2NafYAZPrbenNv2TD7K1MDtlLVNFt6cF39yGaKuO4IwSVEvzoMor3fZq13VDnJIRwfdLuN2VmmYzVq1Jf6GcR1oIrNYbxhHj"; // 2. 要嵌入的网页链接
+const IFRAME_URL = "shturl.cc/jR5eIoxxpldK3pr8VdeRI8oDS1Ot0SRezNewx66PSb84oLPlA6mjlIt97sQuiuvhKHtjbHcUiCMc92vUZOVwAepjh47WkSk2HREvM46wG2tqdcaYkHz3DVm2brTAGOea0ctPlgCer0pgtKHr6IuEYZSAWBF7aj"; // 2. 要嵌入的网页链接
 // ================================================================
 
-// 后端校验过期
+// 后端校验过期（Vercel API路径）
 async function checkExpire() {
     try {
         const res = await fetch(`/api/time?t=${Date.now()}`);
+        if (!res.ok) throw new Error("API请求失败");
         const data = await res.json();
         if (data.expired) {
             document.body.innerHTML = `<div class="expired-box">您的查看有效期已结束！</div>`;
@@ -182,9 +179,7 @@ function formatTime(seconds) {
 
 // 回车登录
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        verifyPassword();
-    }
+    if (e.key === "Enter") verifyPassword();
 });
 </script>
 </body>
