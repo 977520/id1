@@ -2,39 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 移除手机自适应meta标签，保持原始尺寸 -->
     <title>共享账号（实时更新）</title>
     <style>
         body {
             margin: 0;
             padding: 20px;
             background: #f5f5f5;
-            font-family: system-ui, -apple-system, sans-serif;
         }
         .pwd-box {
             text-align: center;
             padding: 60px 20px;
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-        }
-        .pwd-box h3 {
-            margin-bottom: 24px;
-            color: #333;
         }
         .pwd-box input {
             padding: 12px 16px;
             font-size: 16px;
             width: 240px;
             margin-bottom: 18px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            outline: none;
-        }
-        .pwd-box input:focus {
-            border-color: #0071e3;
         }
         .pwd-box button {
             padding: 12px 30px;
@@ -44,11 +30,8 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            transition: background 0.2s;
         }
-        .pwd-box button:hover {
-            background: #0077ed;
-        }
+        /* 倒计时样式 */
         .countdown {
             background: #ff3b30;
             color: #fff;
@@ -58,30 +41,25 @@
             font-weight: bold;
             margin-bottom: 15px;
             border-radius: 8px;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
+            width: 776px; /* 和iframe同宽 */
+            margin-left: auto;
+            margin-right: auto;
         }
+        /* 过期提示 */
         .expired-box {
             text-align: center;
             font-size: 22px;
             color: red;
             padding: 50px 20px;
             font-weight: bold;
-            max-width: 500px;
-            margin: 100px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
+        /* 完全恢复你原本的iframe尺寸，固定不变 */
         .iframe-box {
             width: 800px;
             height: 2400px;
             overflow: hidden;
             border: 1px solid #ccc;
             margin: 0 auto;
-            background: white;
-            border-radius: 8px;
         }
         .iframe-box iframe {
             width: 800px;
@@ -90,16 +68,10 @@
             margin-left: 0px;
             border: none;
         }
-        @media (max-width: 850px) {
-            .iframe-box {
-                width: 100%;
-                height: 3000px;
-            }
-            .iframe-box iframe {
-                width: 100%;
-                height: 4500px;
-                margin-top: -1500px;
-            }
+        /* 标题样式和你原来的一样 */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -107,7 +79,7 @@
 <script>
 // ===================== 你只需要改下面这3个地方 =====================
 const ACCESS_PASSWORD = "123456"; // 1. 访问密码
-const IFRAME_URL = "https://www.ermao.net/blog/freeappleid/#%E6%9C%80%E6%96%B0%E5%85%8D%E8%B4%B9%E5%A4%96%E5%8C%BA-apple-id-%E8%B4%A6%E5%8F%B7%E6%B1%A0-%E5%AE%9E%E6%97%B6%E6%9B%B4%E6%96%B0"; // 2. 要嵌入的网页链接
+const IFRAME_URL = "shturl.cc/NO3YeDlpee3mwlC70ZkergZwqxEWwfLZ55kb1quXoLRiCY7NxTRTJ94FUoPlIL14ptx2cVuPk5d6nGD3nVbFCwkGEa3B3bdd6O4LdAWsa1PDQi12dZ6w89gEtWbUalToa5OxImNHSztQ4HqtibiQUTm86JqLTM"; // 2. 要嵌入的网页链接
 // ================================================================
 
 // 后端校验过期（Vercel API路径）
@@ -131,7 +103,7 @@ async function checkExpire() {
 document.write(`
 <div class="pwd-box">
     <h3>请输入访问密码</h3>
-    <input type="password" id="pwd" placeholder="输入密码" autocomplete="off">
+    <input type="password" id="pwd" placeholder="输入密码">
     <br>
     <button onclick="verifyPassword()">确认进入</button>
 </div>
@@ -141,18 +113,18 @@ document.write(`
 async function verifyPassword() {
     const inputPwd = document.getElementById("pwd").value.trim();
     if (inputPwd !== ACCESS_PASSWORD) {
-        alert("密码错误，请重试");
+        alert("密码错误");
         return;
     }
     
     const leftTime = await checkExpire();
     
-    // 加载主页面
+    // 完全恢复你原来的页面结构
     document.body.innerHTML = `
         <div class="countdown">剩余可查看时间：<span id="timeLeft">${formatTime(leftTime)}</span></div>
-        <h2 style="text-align: center; margin-bottom: 20px;">共享账号（实时更新）</h2>
+        <h2>共享账号，实时更新（刷新需要一点时间）</h2>
         <div class="iframe-box">
-            <iframe src="${IFRAME_URL}" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe>
+            <iframe src="${IFRAME_URL}" scrolling="no"></iframe>
         </div>
     `;
     
