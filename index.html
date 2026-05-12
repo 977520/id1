@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>共享账号（实时更新）</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .pwd-box {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .pwd-box input {
+            padding: 12px 16px;
+            font-size: 16px;
+            width: 240px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .pwd-box button {
+            padding: 12px 30px;
+            background: #0071e3;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .countdown {
+            background: #ff3b30;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .expired-box {
+            text-align: center;
+            font-size: 22px;
+            color: red;
+            padding: 50px 20px;
+            font-weight: bold;
+        }
+        .iframe-box {
+            width: 800px;
+            height: 2400px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+        .iframe-box iframe {
+            width: 800px;
+            height: 3650px;
+            margin-top: -1320px;
+            margin-left: 0px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<script>
+const PASS = "123456";
+const EXPIRE_SEC = 120; // 2分钟
+let deviceId = localStorage.getItem("dev_id");
+if(!deviceId){
+  deviceId = "dev_" + Math.random().toString(36).slice(2);
+  localStorage.setItem("dev_id", deviceId);
+}
+
+async function checkExpire(){
+  let res = await fetch("/api/time?dev="+deviceId);
+  let data = await res.json();
+  if(data.expired){
+    document.body.innerHTML = `<div class="expired-box">您的查看有效期已结束！</div>`;
+    throw new Error("exp");
+  }
+  return data.left;
+}
+
+document.write(`
+<div class="pwd-box">
+    <h3>请输入访问密码</h3>
+    <input type="password" id="pwd" placeholder="输入密码">
+    <br>
+    <button onclick="checkPwd()">确认进入</button>
+</div>
+`);
+
+async function checkPwd(){
+  let val = document.getElementById("pwd").value.trim();
+  if(val !== PASS){
+    alert("密码错误");
+    return;
+  }
+  let left = await checkExpire();
+  document.body.innerHTML = `
+    <div class="countdown">剩余可查看时间：<span id="timeLeft"></span></div>
+    <h2>共享账号，实时更新（刷新需要一点时间）</h2>
+    <div class="iframe-box">
+        <iframe src="https://www.ermao.net/blog/freeappleid/#%E6%9C%80%E6%96%B0%E5%85%8D%E8%B4%B9%E5%A4%96%E5%8C%BA-apple-id-%E8%B4%A6%E5%8F%B7%E6%B1%A0-%E5%AE%9E%E6%97%B6%E6%9B%B4%E6%96%B0" scrolling="no"></iframe>
+    </div>
+  `;
+  setInterval(()=>{
+    left--;
+    if(left<=0){
+      document.body.innerHTML = `<div class="expired-box">您的查看有效期已结束！</div>`;
+      return;
+    }
+    let h = Math.floor(left/3600);
+    let m = Math.floor((left%3600)/60);
+    let s = left%60;
+    document.getElementById("timeLeft").innerText = `${h}时${m}分${s}秒`;
+  },1000);
+}
+</script>
+</body>
+</html>
